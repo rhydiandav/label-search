@@ -1,6 +1,7 @@
 import React from 'react';
 
 import 'reset-css';
+import Body from './components/Body';
 
 function App() {
   const defaultStyle = {
@@ -14,6 +15,7 @@ function App() {
       <header style={defaultStyle}>
         <h1>Label Search</h1>
       </header>
+      <Body defaultStyle={defaultStyle} />
     </div>
   );
 }
