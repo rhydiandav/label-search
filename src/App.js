@@ -1,23 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import 'reset-css';
 
 function App() {
+  const defaultStyle = {
+    'text-align': 'center',
+    color: '#fff',
+    'font-family': 'Helvetica',
+    margin: '1em'
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header style={defaultStyle}>
+        <h1>Label Search</h1>
       </header>
     </div>
   );
