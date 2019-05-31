@@ -1,9 +1,17 @@
 import React from 'react';
 
-const Filter = () => {
+const Filter = props => {
   return (
     <div>
-      <input />
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          props.handleSubmit(e.target[0].value);
+        }}
+      >
+        <input type={'text'} />
+        <input type={'submit'} value={'Search'} />
+      </form>
     </div>
   );
 };
