@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Filter from './Filter';
+import Sort from './Sort';
 import ReleaseCard from './ReleaseCard';
 import queryString from 'query-string';
 
@@ -51,6 +52,35 @@ export default class Body extends Component {
     this.setState({ searchString });
   };
 
+  handleSort = sortBy => {
+    switch (sortBy) {
+      case 'Date (Newest First)':
+        this.setState({
+          releases: this.state.releases.sort((a, b) =>
+            a.releaseDate > b.releaseDate
+              ? -1
+              : b.releaseDate > a.releaseDate
+              ? 1
+              : 0
+          )
+        });
+        break;
+      case 'Date (Oldest First)':
+        this.setState({
+          releases: this.state.releases.sort((a, b) =>
+            a.releaseDate > b.releaseDate
+              ? 1
+              : b.releaseDate > a.releaseDate
+              ? -1
+              : 0
+          )
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
   render() {
     return (
       <div style={this.props.defaultStyle}>
@@ -58,6 +88,7 @@ export default class Body extends Component {
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
+        <Sort handleSort={this.handleSort} />
         <div style={{ display: 'inline-block' }}>
           {this.state.releases.map(release => {
             return <ReleaseCard release={release} key={release.id} />;
