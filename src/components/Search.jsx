@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Filter = props => {
+const Search = props => {
   return (
     <div style={{ margin: '1em' }}>
       <form
@@ -21,4 +21,4 @@ const Filter = props => {
   );
 };
 
-export default Filter;
+export default Search;

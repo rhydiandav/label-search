@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import Filter from './Filter';
+import Search from './Search';
 import Sort from './Sort';
 import ReleaseCard from './ReleaseCard';
 import queryString from 'query-string';
+import LabelFilter from './LabelFilter';
 
 export default class Body extends Component {
   state = {
@@ -65,12 +66,21 @@ export default class Body extends Component {
         return albumPromise;
       })
       .then(releases => {
-        this.setState({ releases });
+        let labels = releases.reduce((uniqueLabels, currentRelease) => {
+          if (!uniqueLabels.includes(currentRelease.label))
+            uniqueLabels.push(currentRelease.label);
+          return uniqueLabels;
+        }, []);
+        this.setState({ releases, labels });
       });
   };
 
   handleChange = searchString => {
-    this.setState({ searchString });
+    this.setState({ searchString, filterString: '' });
+  };
+
+  handleFilter = filterString => {
+    this.setState({ filterString });
   };
 
   handleSort = sortBy => {
@@ -105,16 +115,30 @@ export default class Body extends Component {
   render() {
     return (
       <div style={this.props.defaultStyle}>
-        <Filter
+        <Search
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
+        <LabelFilter
+          handleFilter={this.handleFilter}
+          labels={this.state.labels}
+        />
         <Sort handleSort={this.handleSort} />
-        <div style={{ display: 'inline-block' }}>
-          {this.state.releases.map(release => {
-            return <ReleaseCard release={release} key={release.id} />;
-          })}
-        </div>
+        {this.state.filterString ? (
+          <div>
+            {this.state.releases
+              .filter(release => release.label === this.state.filterString)
+              .map(release => (
+                <ReleaseCard release={release} key={release.id} />
+              ))}
+          </div>
+        ) : (
+          <div style={{ display: 'inline-block' }}>
+            {this.state.releases.map(release => {
+              return <ReleaseCard release={release} key={release.id} />;
+            })}
+          </div>
+        )}
       </div>
     );
   }
