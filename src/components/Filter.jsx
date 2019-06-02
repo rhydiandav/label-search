@@ -2,7 +2,7 @@ import React from 'react';
 
 const Filter = props => {
   return (
-    <div>
+    <div style={{ margin: '1em' }}>
       <form
         onSubmit={e => {
           e.preventDefault();

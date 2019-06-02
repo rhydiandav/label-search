@@ -6,9 +6,10 @@ import queryString from 'query-string';
 
 export default class Body extends Component {
   state = {
+    authorisation: {},
     searchString: '',
     releases: [],
-    authorisation: {}
+    labels: []
   };
 
   componentDidMount() {
@@ -35,16 +36,36 @@ export default class Body extends Component {
     )
       .then(res => res.json())
       .then(data => {
-        let formattedAlbums = data.albums.items.map(album => {
-          return {
-            name: album.name,
-            artists: album.artists.map(artist => artist.name),
-            albumArt: album.images[0].url,
-            id: album.id,
-            releaseDate: album.release_date
-          };
+        let albums = data.albums.items;
+        let albumDataPromises = albums.map(album => {
+          let responsePromise = fetch(
+            `https://api.spotify.com/v1/albums/${album.id}`,
+            {
+              headers: this.state.authorisation
+            }
+          );
+          let albumDataPromise = responsePromise.then(res => res.json());
+          return albumDataPromise;
         });
-        this.setState({ releases: formattedAlbums });
+
+        let allAlbumDataPromises = Promise.all(albumDataPromises);
+
+        let albumPromise = allAlbumDataPromises.then(albumsData => {
+          return albumsData.map(album => {
+            return {
+              id: album.id,
+              name: album.name,
+              artists: album.artists.map(artist => artist.name),
+              albumArt: album.images[0].url,
+              releaseDate: album.release_date,
+              label: album.label
+            };
+          });
+        });
+        return albumPromise;
+      })
+      .then(releases => {
+        this.setState({ releases });
       });
   };
 

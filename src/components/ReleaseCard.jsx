@@ -13,7 +13,7 @@ const ReleaseCard = props => {
       </a>
       <h2>{props.release.name}</h2>
       {props.release.artists.map(artist => (
-        <h3>{artist}</h3>
+        <h3 key={artist}>{artist}</h3>
       ))}
     </div>
   );

@@ -5,9 +5,9 @@ import Body from './components/Body';
 
 function App() {
   const defaultStyle = {
-    'text-align': 'center',
+    textAlign: 'center',
     color: '#fff',
-    'font-family': 'Helvetica',
+    fontFamily: 'Helvetica',
     margin: '1em'
   };
   return (
