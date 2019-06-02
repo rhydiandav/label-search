@@ -6,10 +6,15 @@ const Filter = props => {
       <form
         onSubmit={e => {
           e.preventDefault();
-          props.handleSubmit(e.target[0].value);
+          props.handleSubmit();
         }}
       >
-        <input type={'text'} />
+        <input
+          type={'text'}
+          onChange={e => {
+            props.handleChange(e.target.value);
+          }}
+        />
         <input type={'submit'} value={'Search'} />
       </form>
     </div>

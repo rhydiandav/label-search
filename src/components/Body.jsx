@@ -1,47 +1,63 @@
 import React, { Component } from 'react';
 import Filter from './Filter';
 import ReleaseCard from './ReleaseCard';
+import queryString from 'query-string';
 
 export default class Body extends Component {
   state = {
     searchString: '',
-    releases: []
+    releases: [],
+    authorisation: {}
   };
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        searchString: 'Hyperdub',
-        releases: [
-          {
-            title: 'Untrue',
-            artists: ['Burial'],
-            albumArt:
-              'https://i.scdn.co/image/0c0d4ccf90d9722c5675823b6c7a53cfe6e2841f',
-            id: '1C30LhZB9I48LdpVCRRYvq',
-            releaseDate: '2007-11-05'
-          },
-          {
-            title: 'Burial',
-            artists: ['Burial'],
-            albumArt:
-              'https://i.scdn.co/image/9887e498ad64beb738b24db3b5dd6a06b8fdddfa',
-            id: '18f6aWSeCaKMZxg75d0t2g',
-            releaseDate: '2006-05-15'
-          }
-        ]
-      });
-    }, 1000);
+    let parsed = queryString.parse(window.location.search);
+    let accessToken = parsed.access_token;
+
+    if (!accessToken) return;
+
+    this.setState({
+      authorisation: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    });
   }
 
-  handleSubmit = searchString => {
+  handleSubmit = () => {
+    fetch(
+      `https://api.spotify.com/v1/search?q=label:"${
+        this.state.searchString
+      }"&type=album&limit=50`,
+      {
+        headers: this.state.authorisation
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
+        let formattedAlbums = data.albums.items.map(album => {
+          return {
+            name: album.name,
+            artists: album.artists.map(artist => artist.name),
+            albumArt: album.images[0].url,
+            id: album.id,
+            releaseDate: album.release_date
+          };
+        });
+        this.setState({ releases: formattedAlbums });
+      });
+  };
+
+  handleChange = searchString => {
     this.setState({ searchString });
   };
 
   render() {
     return (
       <div style={this.props.defaultStyle}>
-        <Filter handleSubmit={this.handleSubmit} />
+        <Filter
+          handleChange={this.handleChange}
+          handleSubmit={this.handleSubmit}
+        />
         <div style={{ display: 'inline-block' }}>
           {this.state.releases.map(release => {
             return <ReleaseCard release={release} key={release.id} />;

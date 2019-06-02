@@ -8,10 +8,10 @@ const ReleaseCard = props => {
         <img
           src={props.release.albumArt}
           style={albumArtStyle}
-          alt={props.release.title}
+          alt={props.release.name}
         />
       </a>
-      <h2>{props.release.title}</h2>
+      <h2>{props.release.name}</h2>
       {props.release.artists.map(artist => (
         <h3>{artist}</h3>
       ))}
