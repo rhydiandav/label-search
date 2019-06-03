@@ -7,7 +7,6 @@ import LabelFilter from './LabelFilter';
 
 export default class Body extends Component {
   state = {
-    authorisation: {},
     searchString: '',
     releases: [],
     labels: []
@@ -113,7 +112,7 @@ export default class Body extends Component {
   };
 
   render() {
-    return (
+    return this.state.authorisation ? (
       <div style={this.props.defaultStyle}>
         <Search
           handleChange={this.handleChange}
@@ -139,6 +138,16 @@ export default class Body extends Component {
             })}
           </div>
         )}
+      </div>
+    ) : (
+      <div style={this.props.defaultStyle}>
+        <button
+          onClick={() => {
+            window.location = 'http://localhost:8888/login';
+          }}
+        >
+          Sign In
+        </button>
       </div>
     );
   }
