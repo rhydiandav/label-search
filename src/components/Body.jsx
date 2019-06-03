@@ -26,6 +26,50 @@ export default class Body extends Component {
     });
   }
 
+  getLabels = params => {
+    fetch(
+      `https://api.spotify.com/v1/search?q=label:"${
+        this.state.searchString
+      }"&type=album&offset=${params ? params.offset : 0}&limit=50`,
+      {
+        headers: this.state.authorisation
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
+        let albums = data.albums.items;
+        let albumDataPromises = albums.map(album => {
+          let responsePromise = fetch(
+            `https://api.spotify.com/v1/albums/${album.id}`,
+            {
+              headers: this.state.authorisation
+            }
+          );
+          let albumDataPromise = responsePromise.then(res => res.json());
+          return albumDataPromise;
+        });
+
+        let allAlbumDataPromises = Promise.all(albumDataPromises);
+
+        let albumPromise = allAlbumDataPromises.then(albumsData => {
+          return albumsData.map(album => {
+            return {
+              label: album.label
+            };
+          });
+        });
+        return albumPromise;
+      })
+      .then(releases => {
+        let labels = releases.reduce((uniqueLabels, currentRelease) => {
+          if (!uniqueLabels.includes(currentRelease.label))
+            uniqueLabels.push(currentRelease.label);
+          return uniqueLabels;
+        }, []);
+        this.setState({ labels });
+      });
+  };
+
   getAlbums = params => {
     fetch(
       `https://api.spotify.com/v1/search?q=label:"${
@@ -74,16 +118,21 @@ export default class Body extends Component {
         if (!params) {
           this.setState({ releases, labels });
         } else {
+          let newPage = this.state.page + 1;
           this.setState({
             releases: this.state.releases.concat(releases),
-            labels
+            page: newPage
           });
+          if (labels.includes(this.state.filterString)) {
+            console.log('loading more...');
+            this.getAlbums({ offset: newPage * 50 });
+          } else console.log('done');
         }
       });
   };
 
   handleSubmit = () => {
-    this.getAlbums();
+    this.getLabels();
   };
 
   handleLoadMore = () => {
@@ -98,6 +147,8 @@ export default class Body extends Component {
 
   handleFilter = filterString => {
     this.setState({ filterString });
+    this.getAlbums();
+    this.handleLoadMore();
   };
 
   handleSort = sortBy => {
@@ -156,7 +207,6 @@ export default class Body extends Component {
             })}
           </div>
         )}
-        <button onClick={this.handleLoadMore}>Load more...</button>
       </div>
     ) : (
       <div style={this.props.defaultStyle}>
