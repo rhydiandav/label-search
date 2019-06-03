@@ -9,7 +9,8 @@ export default class Body extends Component {
   state = {
     searchString: '',
     releases: [],
-    labels: []
+    labels: [],
+    page: 0
   };
 
   componentDidMount() {
@@ -25,11 +26,11 @@ export default class Body extends Component {
     });
   }
 
-  handleSubmit = () => {
+  getAlbums = params => {
     fetch(
       `https://api.spotify.com/v1/search?q=label:"${
         this.state.searchString
-      }"&type=album&limit=50`,
+      }"&type=album&offset=${params ? params.offset : 0}&limit=50`,
       {
         headers: this.state.authorisation
       }
@@ -70,8 +71,25 @@ export default class Body extends Component {
             uniqueLabels.push(currentRelease.label);
           return uniqueLabels;
         }, []);
-        this.setState({ releases, labels });
+        if (!params) {
+          this.setState({ releases, labels });
+        } else {
+          this.setState({
+            releases: this.state.releases.concat(releases),
+            labels
+          });
+        }
       });
+  };
+
+  handleSubmit = () => {
+    this.getAlbums();
+  };
+
+  handleLoadMore = () => {
+    let newPage = this.state.page + 1;
+    this.setState({ page: newPage });
+    this.getAlbums({ offset: newPage * 50 });
   };
 
   handleChange = searchString => {
@@ -138,6 +156,7 @@ export default class Body extends Component {
             })}
           </div>
         )}
+        <button onClick={this.handleLoadMore}>Load more...</button>
       </div>
     ) : (
       <div style={this.props.defaultStyle}>
