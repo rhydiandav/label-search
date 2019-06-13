@@ -212,7 +212,9 @@ export default class Body extends Component {
       <div style={this.props.defaultStyle}>
         <button
           onClick={() => {
-            window.location = 'http://localhost:8888/login';
+            window.location = window.location.href.includes('localhost')
+              ? 'http://localhost:8888/login'
+              : 'https://label-search.herokuapp.com/login';
           }}
         >
           Sign In
