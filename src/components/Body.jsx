@@ -214,7 +214,7 @@ export default class Body extends Component {
           onClick={() => {
             window.location = window.location.href.includes('localhost')
               ? 'http://localhost:8888/login'
-              : 'https://label-search.herokuapp.com/login';
+              : 'https://label-search-backend.herokuapp.com/login';
           }}
         >
           Sign In
