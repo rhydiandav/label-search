@@ -4,13 +4,15 @@ import Sort from './Sort';
 import ReleaseCard from './ReleaseCard';
 import queryString from 'query-string';
 import LabelFilter from './LabelFilter';
+import Loading from './Loading';
 
 export default class Body extends Component {
   state = {
     searchString: '',
     releases: [],
     labels: [],
-    page: 0
+    page: 0,
+    isLoading: false
   };
 
   componentDidMount() {
@@ -124,9 +126,10 @@ export default class Body extends Component {
             page: newPage
           });
           if (labels.includes(this.state.filterString)) {
-            console.log('loading more...');
             this.getAlbums({ offset: newPage * 50 });
-          } else console.log('done');
+          } else {
+            this.setState({ isLoading: false });
+          }
         }
       });
   };
@@ -146,7 +149,7 @@ export default class Body extends Component {
   };
 
   handleFilter = filterString => {
-    this.setState({ filterString });
+    this.setState({ filterString, isLoading: true });
     this.getAlbums();
     this.handleLoadMore();
   };
@@ -192,7 +195,9 @@ export default class Body extends Component {
           labels={this.state.labels}
         />
         <Sort handleSort={this.handleSort} />
-        {this.state.filterString ? (
+        {this.state.isLoading ? (
+          <Loading />
+        ) : this.state.filterString ? (
           <div>
             {this.state.releases
               .filter(release => release.label === this.state.filterString)
